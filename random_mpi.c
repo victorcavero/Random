@@ -16,7 +16,6 @@ int lcrg_evaluate ( int a, int b, int c, int x );
 int power_mod ( int a, int n, int m );
 void timestamp ( void );
 
-
 /******************************************************************************/
 int main ( int argc, char *argv[] )
 /*
@@ -51,215 +50,157 @@ int main ( int argc, char *argv[] )
   int p;
   int u;
   int v;
-
-
-  /// variables extra
-
-  int desviacion; 
-  int interator=0;
-  double t_init;
-  double t_end;
-  double time_calculated;
-  double media;
-  double sum_temp;
-  double normalize;
-
-      /*
-      Initialize MPI.
-    */
-      MPI_Init ( &argc, &argv );
-    /*
-      Get the number of processors.
-    */
-      MPI_Comm_size ( MPI_COMM_WORLD, &p );
-    /*
-      Get the rank of this processor.
-    */
-      MPI_Comm_rank ( MPI_COMM_WORLD, &id );
-
-  for(int i=0; i<1500; i++){
- // while( interator < 2 ){//|| !(normalize > 5) ){
-
-    /*
-      Print a message.
-    */
-     // MPI_Barrier(MPI_COMM_WORLD);
-
-    t_init = MPI_Wtime();
-
-      if ( id == 0 )
-      {
-        timestamp ( );
-      //   printf ( "\n" );
-      //   printf ( "RANDOM_MPI - Master process:\n" );
-      //   printf ( "  C version\n" );
-      //   printf ( "  The number of processors is P = %d\n", p );
-      //   printf ( "\n" );
-      //   printf ( "  This program shows how a stream of random numbers\n" );
-      //   printf ( "  can be computed 'in parallel' in an MPI program.\n" );
-      //   printf ( "\n" );
-      //   printf ( "  We assume we are using a linear congruential\n" );
-      //   printf ( "  random number generator or LCRG, which takes\n" );
-      //   printf ( "  an integer input and returns a new integer output:\n" );
-      //   printf ( "\n" );
-      //   printf ( "    U = ( A * V + B ) mod C\n" );
-      //   printf ( "\n" );
-      //   printf ( "  We assume that we want the MPI program to produce\n" );
-      //   printf ( "  the same sequence of random values as a sequential\n" );
-      //   printf ( "  program would - but we want each processor to compute\n" );
-      //   printf ( "  one part of that sequence.\n" );
-      //   printf ( "\n" );
-      //   printf ( "  We do this by computing a new LCRG which can compute\n" );
-      //   printf ( "  every P'th entry of the original one.\n" );
-      //   printf ( "\n" );
-      //   printf ( "  Our LCRG works with integers, but it is easy to\n" );
-      //   printf ( "  turn each integer into a real number between [0,1].\n" );
-      }
-      /*
-        A, B and C define the linear congruential random number generator.
-      */
-      a = 16807;
-      b = 0;
-      c = 2147483647;
-
-      // if ( id == 0 )
-      // {
-      //   printf ( "\n" );
-      //   printf ( "  LCRG parameters:\n" );
-      //   printf ( "\n" );
-      //   printf ( "  A  = %d\n", a );
-      //   printf ( "  B  = %d\n", b );
-      //   printf ( "  C  = %d\n", c );
-      // }
-
-      k_hi = p * 10;
-    /*
-      Processor 0 generates 10 * P random values.
-    */
-      if ( id == 0 )
-      {
-        // printf ( "\n" );
-        // printf ( "  Let processor 0 generate the entire random number sequence.\n" );
-        // printf ( "\n" );
-        // printf ( "     K    ID         Input        Output\n" );
-        // printf ( "\n" );
-
-        k = 0;
-        v = 12345;
-       // printf ( "  %4d  %4d                %12d\n", k, id, v );
-
-        for ( k = 1; k <= k_hi; k++ )
-        {
-          u = v;
-          v = lcrg_evaluate ( a, b, c, u );
-          //printf ( "  %4d  %4d  %12d  %12d\n", k, id, u, v );
-        }
-      }
-    /*
-      Processor P now participates by computing the P-th part of the sequence.
-    */
-      lcrg_anbn ( a, b, c, p, &an, &bn );
-
-      // if ( id == 0 )
-      // {
-      //   printf ( "\n" );
-      //   printf ( "  LCRG parameters for P processors:\n" );
-      //   printf ( "\n" );
-      //   printf ( "  AN = %d\n", an );
-      //   printf ( "  BN = %d\n", bn );
-      //   printf ( "  C  = %d\n", c );
-      //   printf ( "\n" );
-      //   printf ( "  Have ALL the processors participate in computing\n" );
-      //   printf ( "  the same random number sequence.\n" );
-      //   printf ( "\n" );
-      //   printf ( "     K    ID         Input        Output\n" );
-      //   printf ( "\n" );
-      // }
-    /*
-      Use the basis LCRG to get the ID-th value in the sequence.
-    */
-      v = 12345;
-      for ( j = 1; j <= id; j++ )
-      {
-        u = v;
-        v = lcrg_evaluate ( a, b, c, u );
-      }
-      k = id;
-
-      printf ( "  %4d  %4d                %12d\n", k, id, v );
-    /*
-      Now use the "skipping" LCRG to compute the values with indices
-      ID, ID+P, ID+2P, ...,
-    */
-      for ( k = id + p; k <= k_hi; k = k + p )
-      {
-        u = v;
-        v = lcrg_evaluate ( an, bn, c, u );
-        printf ( "  %4d  %4d  %12d  %12d\n", k, id, u, v );
-      }
-
-      
-
-    t_end = MPI_Wtime();
-    
-
- 
-      if ( id == 0 )
-      {
-        printf ( "\n" );
-        printf ( "RANDOM_MPI:\n" );
-        printf ( "  Normal end of execution.\n" );
-        printf ( "\n" );
-        timestamp ( );
-        
-      interator++;
-      time_calculated = t_end - t_init;
-      media += time_calculated/interator;
-      sum_temp += pow((time_calculated-media),2);
-      desviacion= sqrt(sum_temp/interator);
-      normalize = desviacion/media * 100; 
-      printf ( "  Time calculated = %f\n", time_calculated );
-      }
-    
-  //}
-  }
+  float total_time;
+  float t_end, t_init;
 /*
-    Terminate MPI.
-  */
-    MPI_Finalize();
-  /*
-    Terminate.
-  */
-  
-  //return 0;
+  Initialize MPI.
+*/
+  MPI_Init ( &argc, &argv );
+/*
+  Get the number of processors.
+*/
+  MPI_Comm_size ( MPI_COMM_WORLD, &p );
+/*
+  Get the rank of this processor.
+*/
+  MPI_Comm_rank ( MPI_COMM_WORLD, &id );
+
+
+  t_init = MPI_Wtime();
+/*
+  Print a message.
+*/
   if ( id == 0 )
   {
-    printf ( "\n" );
-    printf ( "  Execution test done.\n" );
-    
-    printf ( "  Normalize = %f\n", normalize );
-    printf ( "  Iterator = %d\n", interator );
-    printf ( "\n" );
+    timestamp ( );
+    // printf ( "\n" );
+    // printf ( "RANDOM_MPI - Master process:\n" );
+    // printf ( "  C version\n" );
+    // printf ( "  The number of processors is P = %d\n", p );
+    // printf ( "\n" );
+    // printf ( "  This program shows how a stream of random numbers\n" );
+    // printf ( "  can be computed 'in parallel' in an MPI program.\n" );
+    // printf ( "\n" );
+    // printf ( "  We assume we are using a linear congruential\n" );
+    // printf ( "  random number generator or LCRG, which takes\n" );
+    // printf ( "  an integer input and returns a new integer output:\n" );
+    // printf ( "\n" );
+    // printf ( "    U = ( A * V + B ) mod C\n" );
+    // printf ( "\n" );
+    // printf ( "  We assume that we want the MPI program to produce\n" );
+    // printf ( "  the same sequence of random values as a sequential\n" );
+    // printf ( "  program would - but we want each processor to compute\n" );
+    // printf ( "  one part of that sequence.\n" );
+    // printf ( "\n" );
+    // printf ( "  We do this by computing a new LCRG which can compute\n" );
+    // printf ( "  every P'th entry of the original one.\n" );
+    // printf ( "\n" );
+    // printf ( "  Our LCRG works with integers, but it is easy to\n" );
+    // printf ( "  turn each integer into a real number between [0,1].\n" );
+  }
+/*
+  A, B and C define the linear congruential random number generator.
+*/
+  a = 16807;
+  b = 0;
+  c = 2147483647;
+
+  // if ( id == 0 )
+  // {
+  //   printf ( "\n" );
+  //   printf ( "  LCRG parameters:\n" );
+  //   printf ( "\n" );
+  //   printf ( "  A  = %d\n", a );
+  //   printf ( "  B  = %d\n", b );
+  //   printf ( "  C  = %d\n", c );
+  // }
+
+  k_hi = p * 10;
+/*
+  Processor 0 generates 10 * P random values.
+*/
+  if ( id == 0 )
+  {
+    // printf ( "\n" );
+    // printf ( "  Let processor 0 generate the entire random number sequence.\n" );
+    // printf ( "\n" );
+    // printf ( "     K    ID         Input        Output\n" );
+    // printf ( "\n" );
+
+    k = 0;
+    v = 12345;
+    //printf ( "  %4d  %4d                %12d\n", k, id, v );
+
+    for ( k = 1; k <= k_hi; k++ )
+    {
+      u = v;
+      v = lcrg_evaluate ( a, b, c, u );
+      //printf ( "  %4d  %4d  %12d  %12d\n", k, id, u, v );
+    }
+  }
+/*
+  Processor P now participates by computing the P-th part of the sequence.
+*/
+  lcrg_anbn ( a, b, c, p, &an, &bn );
+
+  // if ( id == 0 )
+  // {
+  //   printf ( "\n" );
+  //   printf ( "  LCRG parameters for P processors:\n" );
+  //   printf ( "\n" );
+  //   printf ( "  AN = %d\n", an );
+  //   printf ( "  BN = %d\n", bn );
+  //   printf ( "  C  = %d\n", c );
+  //   printf ( "\n" );
+  //   printf ( "  Have ALL the processors participate in computing\n" );
+  //   printf ( "  the same random number sequence.\n" );
+  //   printf ( "\n" );
+  //   printf ( "     K    ID         Input        Output\n" );
+  //   printf ( "\n" );
+  // }
+/*
+  Use the basis LCRG to get the ID-th value in the sequence.
+*/
+  v = 12345;
+  for ( j = 1; j <= id; j++ )
+  {
+    u = v;
+    v = lcrg_evaluate ( a, b, c, u );
+  }
+  k = id;
+
+  //printf ( "  %4d  %4d                %12d\n", k, id, v );
+/*
+  Now use the "skipping" LCRG to compute the values with indices
+  ID, ID+P, ID+2P, ...,
+*/
+  for ( k = id + p; k <= k_hi; k = k + p )
+  {
+    u = v;
+    v = lcrg_evaluate ( an, bn, c, u );
+    //printf ( "  %4d  %4d  %12d  %12d\n", k, id, u, v );
   }
 
-    
+  t_end = MPI_Wtime();
+/*
+  Terminate MPI.
+*/
+  MPI_Finalize ( );
+/*
+  Terminate.
+*/
+  if ( id == 0 )
+  {
+    // printf ( "\n" );
+    // printf ( "RANDOM_MPI:\n" );
+    // printf ( "  Normal end of execution.\n" );
+    // printf ( "\n" );
+    total_time=t_end-t_init;
+    printf ( "  Time total = %f\n", total_time );
+    timestamp ( );
+  }
+  return 0;
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 /******************************************************************************/
 
 int congruence ( int a, int b, int c, int *error )
@@ -431,9 +372,9 @@ int congruence ( int a, int b, int c, int *error )
     if ( N_MAX < n )
     {
       *error = 1;
-      printf ( "\n" );
-      printf ( "CONGRUENCE - Fatal error!\n" );
-      printf ( "  Exceeded number of iterations.\n" );
+      // printf ( "\n" );
+      // printf ( "CONGRUENCE - Fatal error!\n" );
+      // printf ( "  Exceeded number of iterations.\n" );
       exit ( 1 );
     }
   }
@@ -717,17 +658,17 @@ void lcrg_anbn ( int a, int b, int c, int n, int *an, int *bn )
 
   if ( n < 0 )
   {
-    printf ( "\n" );
-    printf ( "LCRG_ANBN - Fatal error!\n" );
-    printf ( "  Illegal input value of N = %d\n", n );
+    // printf ( "\n" );
+    // printf ( "LCRG_ANBN - Fatal error!\n" );
+    // printf ( "  Illegal input value of N = %d\n", n );
     exit ( 1 );
   }
 
   if ( c <= 0 )
   {
-    printf ( "\n" );
-    printf ( "LCRG_ANBN - Fatal error!\n" );
-    printf ( "  Illegal input value of C = %d\n", c );
+    // printf ( "\n" );
+    // printf ( "LCRG_ANBN - Fatal error!\n" );
+    // printf ( "  Illegal input value of C = %d\n", c );
     exit ( 1 );
   }
 
@@ -759,9 +700,9 @@ void lcrg_anbn ( int a, int b, int c, int n, int *an, int *bn )
 
     if ( ierror )
     {
-      printf ( "\n" );
-      printf ( "LCRG_ANBN - Fatal error!\n" );
-      printf ( "  An error occurred in the CONGRUENCE routine.\n" );
+      // printf ( "\n" );
+      // printf ( "LCRG_ANBN - Fatal error!\n" );
+      // printf ( "  An error occurred in the CONGRUENCE routine.\n" );
       exit ( 1 );
     }
   }
