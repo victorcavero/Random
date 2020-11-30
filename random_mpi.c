@@ -906,7 +906,7 @@ void timestamp ( void )
 
   len = strftime ( time_buffer, TIME_SIZE, "%d %B %Y %I:%M:%S %p", tm );
 
-  printf ( "%s\n", time_buffer );
+  //printf ( "%s\n", time_buffer );
 
   return;
 # undef TIME_SIZE
