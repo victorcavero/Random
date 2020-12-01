@@ -35,21 +35,9 @@ int main ( void )
   int n;
   int seed;
   double t_init, t_final;
-  double t_total;
   
   t_init=omp_get_wtime();
   timestamp ( );
-
-  // printf ( "\n" );
-  // printf ( "RANDOM_OPENMP\n" );
-  // printf ( "  C version\n" );
-  // printf ( "  An OpenMP program using random numbers.\n" );
-  // printf ( "  The random numbers depend on a seed.\n" );
-  // printf ( "  We need to insure that each OpenMP thread\n" );
-  // printf ( "  starts with a different seed.\n" );
-  // printf ( "\n" );
-  // printf ( "  Number of processors available = %d\n", omp_get_num_procs ( ) );
-  // printf ( "  Number of threads =              %d\n", omp_get_max_threads ( ) );
 
   n = 100;
   seed = 123456789;
@@ -57,15 +45,10 @@ int main ( void )
 /*
   Terminate.
 */
-  // printf ( "\n" );
-  // printf ( "RANDOM_OPENMP\n" );
-  // printf ( "  Normal end of execution.\n" );
 
-  // printf ( "\n" );
   timestamp ( );
   t_final=omp_get_wtime(); 
-  t_total = t_final-t_init;
-  printf ( "  Time total = %f\n", t_total );
+  printf("%9.6lf\n", (t_init - t_final) * 1000);
   return 0;
 }
 /******************************************************************************/
@@ -93,24 +76,17 @@ void monte_carlo ( int n, int *seed )
 
   x = ( double * ) malloc ( n * sizeof ( double ) );
 
-# pragma omp master
-{
-  // printf ( "\n" );
-  // printf ( "  Thread   Seed  I   X(I)\n" );
-  // printf ( "\n" );
-}
 
 # pragma omp parallel private ( i, my_id, my_seed ) shared ( n, x )
 {
   my_id = omp_get_thread_num ( );
   my_seed = *seed + my_id;
-  //printf ( "  %6d  %12d\n", my_id, my_seed );
 
 # pragma omp for
   for ( i = 0; i < n; i++ )
   {
     x[i] = random_value ( &my_seed );
-    //printf ( "  %6d  %12d  %6d  %14.6g\n", my_id, my_seed, i, x[i] );
+    
   }
 
 }
