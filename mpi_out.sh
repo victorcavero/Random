@@ -7,31 +7,31 @@
 module load openmpi/2.1.6
 
 echo "1 Proceso"
-for i in {0...100}
+for i in {0..100}
 do
-	mpirun -np 1 random_mpi.out
+        mpirun -np 1 random_mpi.out
 done
 
 echo "2 Procesos"
-for i in {0...100}
+for i in {0..100}
 do
         mpirun -np 2 random_mpi.out
 done
 
 echo "4 Procesos"
-for i in {0...100}
+for i in {0..100}
 do
         mpirun -np 4 random_mpi.out
 done
 
 echo "8 Procesos"
-for i in {0...100}
+for i in {0..100}
 do
         mpirun -np 8 random_mpi.out
 done
 
 #echo "12 Procesos"
-#for i in {0...100}
+#for i in {0..100}
 #do
 #        mpirun -np 12 random_mpi.out
 #done

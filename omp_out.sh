@@ -9,7 +9,7 @@ module load gcc/5.5.0
 echo "1 Proceso"
 for i in {1..100}
 do
-	./random_openmp.out 1
+        ./random_openmp.out 1
 done
 
 echo "2 Procesos"
