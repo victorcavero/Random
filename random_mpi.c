@@ -40,7 +40,7 @@ int main(int argc, char* argv[]) {
     b = 0;
     c = 2147483647;
 
-    k_hi = p * 10;
+    k_hi = 10000;
 
     if (id == 0) {
         t1 = MPI_Wtime();

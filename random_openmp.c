@@ -39,7 +39,7 @@ int main ( void )
   t_init=omp_get_wtime();
   timestamp ( );
 
-  n = 100;
+  n = 10000;
   seed = 123456789;
   monte_carlo ( n, &seed );
 /*
