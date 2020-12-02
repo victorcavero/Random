@@ -48,7 +48,7 @@ int main ( void )
 
   timestamp ( );
   t_final=omp_get_wtime(); 
-  printf("%9.6lf\n", (t_init - t_final) * 1000);
+  printf("%9.6lf\n", (t_final - t_init) * 1000);
   return 0;
 }
 /******************************************************************************/

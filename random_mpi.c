@@ -49,7 +49,7 @@ int main(int argc, char* argv[]) {
 
         for (k = 1; k <= k_hi; k++) {
             u = v;
-            v = lcrg_evaluate(a, b, c, u);
+            v = lcrg_evaluate(a, b, c, u); // 5 operations
         }
     }
     lcrg_anbn(a, b, c, p, &an, &bn);
@@ -57,13 +57,13 @@ int main(int argc, char* argv[]) {
     v = 12345;
     for (j = 1; j <= id; j++) {
         u = v;
-        v = lcrg_evaluate(a, b, c, u);
+        v = lcrg_evaluate(a, b, c, u); // 5 * process_id
     }
     k = id;
 
     for (k = id + p; k <= k_hi; k = k + p) {
         u = v;
-        v = lcrg_evaluate(an, bn, c, u);
+        v = lcrg_evaluate(an, bn, c, u); //5 * 10*process_total/process_id
     }
 
     if (id == 0) {
