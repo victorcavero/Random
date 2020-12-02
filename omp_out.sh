@@ -4,6 +4,8 @@
 #SBATCH -N 1
 #SBATCH --tasks-per-node=8
 
+echo " OMP Test"
+
 module load gcc/5.5.0
 
 echo "1 Proceso"

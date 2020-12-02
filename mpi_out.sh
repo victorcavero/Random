@@ -4,6 +4,8 @@
 #SBATCH -N 1
 #SBATCH --tasks-per-node=8
 
+echo "MPI Test"
+
 module load openmpi/2.1.6
 
 echo "1 Proceso"
